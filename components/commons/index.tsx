@@ -18,4 +18,5 @@ export const components = {
   Tabs: dynamic(() => import('./Tabs')),
   Table: dynamic(() => import('./Table')),
   InputInvoice: dynamic(() => import("./InputInvoice")),
+  CustomWidgetce02f6320672: dynamic(() => import("./CustomWidgetce02f6320672")),
 };
