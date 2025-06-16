@@ -86,7 +86,12 @@ const RenderUIClient = (props: any) => {
   
   const { setActions } = actionsStore();
   const { enable, pages, entryPage } = authSettingStore();
-  const { bodyLayout, isLoading } = useConstructorDataAPI(props?.documentId, props?.pathName);
+
+  const newPathName =
+  Array.isArray(props?.pathName)
+    ? props.pathName.join('/')
+    : props?.pathName || '';
+  const { bodyLayout, isLoading } = useConstructorDataAPI(props?.documentId, newPathName);
 
   useEffect(() => {
     if (bodyLayout) setData(bodyLayout);
