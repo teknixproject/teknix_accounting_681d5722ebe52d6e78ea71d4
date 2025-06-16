@@ -17,4 +17,5 @@ export const components = {
   InputSearch: dynamic(() => import('./InputSearch')),
   Tabs: dynamic(() => import('./Tabs')),
   Table: dynamic(() => import('./Table')),
+  InputInvoice: dynamic(() => import("./InputInvoice")),
 };
