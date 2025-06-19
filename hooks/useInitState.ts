@@ -138,20 +138,224 @@ export const useInitStatePreview = () => {
 
 //#region State Render
 const projectId = process.env.NEXT_PUBLIC_PROJECT_ID;
+// export const useInitStateRender = () => {
+//   const pathname = usePathname(); // /detail/123
+//   const [matchingPattern, setMatchingPattern] = useState<string | null>(null);
+
+//   useEffect(() => {
+//     fetch('/api/route-patterns')
+//       .then((res) => res.json())
+//       .then((data) => {
+//         const matched = getMatchingRoutePattern(pathname, data);
+//         console.log('matched', matched)
+//         setMatchingPattern(matched);
+//       })
+//       .catch((error) => console.error('Error fetching patterns:', error));
+//   }, [pathname]);
+
+//   const { addAndUpdateApiResource } = apiResourceStore();
+//   const { setStateManagement, findVariable } = stateManagementStore();
+//   const resetAuthSettings = authSettingStore((state) => state.reset);
+
+//   const router = useRouter();
+
+//   const uid = matchingPattern;
+
+//   const setCustomFunctions = customFunctionStore((state) => state.setCustomFunctions);
+//   const { setActions } = actionsStore();
+//   const { enable, pages, entryPage } = authSettingStore();
+//   const { bodyLayout, isLoading } = useConstructorDataAPI(uid || '/');
+
+//   const [deviceType, setDeviceType] = useState<DeviceType>(getDeviceType());
+//   const selectedBodyLayout = bodyLayout[deviceType] ?? bodyLayout ?? {};
+
+//   useEffect(() => {
+//     if (typeof window === 'undefined') return;
+//     const handleResize = () => {
+//       setDeviceType(getDeviceType());
+//     };
+//     window.addEventListener('resize', handleResize);
+//     return () => {
+//       window.removeEventListener('resize', handleResize);
+//     };
+//   }, []);
+
+//   const getStates = async () => {
+//     const list: TTypeSelectState[] = [
+//       'parameters',
+//       'appState',
+//       'componentState',
+//       'globalState',
+//       'apiResponse',
+//       'dynamicGenerate',
+//     ];
+//     try {
+//       await Promise.all(
+//         list.map(async (type: TTypeSelectState) => {
+//           const result = await stateManagerService.getData(
+//             type === 'globalState'
+//               ? {
+//                   projectId: projectId || process.env.NEXT_PUBLIC_PROJECT_ID || '',
+//                   type,
+//                 }
+//               : {
+//                   uid: uid ?? '/',
+//                   projectId: projectId || process.env.NEXT_PUBLIC_PROJECT_ID || '',
+//                   type,
+//                 }
+//           );
+//           if (_.isEmpty(result?.data)) return;
+//           const { state } = result?.data;
+//           if (_.isEmpty(state)) return;
+
+//           if (state) {
+//             setStateManagement({
+//               type,
+//               dataUpdate: state.reduce((acc: TVariableMap, item: TVariable) => {
+//                 return {
+//                   ...acc,
+//                   [item.id]: item,
+//                 };
+//               }, {}),
+//             });
+//           }
+//         })
+//       );
+//     } catch (error) {
+//       console.log('🚀 ~ getStates ~ error:', error);
+//     }
+//   };
+
+//   const getActions = async () => {
+//     try {
+//       const result = await actionService.getData({
+//         uid: uid,
+//         projectId: projectId || process.env.NEXT_PUBLIC_PROJECT_ID || '',
+//       });
+//       if (_.isEmpty(result?.data?.data)) return;
+//       setActions(result.data.data);
+//     } catch (error) {
+//       console.log('🚀 ~ getStates ~ error:', error);
+//     }
+//   };
+
+//   const getApiCall = async () => {
+//     try {
+//       const result = await apiCallService.getAll({
+//         projectId: projectId || process.env.NEXT_PUBLIC_PROJECT_ID || '',
+//       });
+//       addAndUpdateApiResource({ apis: result?.data?.apis });
+//     } catch (error) {
+//       console.log('🚀 ~ getApiCall ~ error:', error);
+//     }
+//   };
+//   const getCustomFunctions = async () => {
+//     try {
+//       const result = await customFunctionService.getAll({
+//         uid: uid || '',
+//         projectId: projectId || process.env.NEXT_PUBLIC_PROJECT_ID || '',
+//       });
+//       setCustomFunctions(result.data);
+//     } catch (error) {
+//       console.log('🚀 ~ getCustomFunctions ~ error:', error);
+//     }
+//   };
+//   const getAuthSettings = async () => {
+//     try {
+//       const result = await authSettingService.get({ projectId });
+//       resetAuthSettings(result?.data);
+//     } catch (error) {
+//       console.log('🚀 ~ getAuthSettings ~ error:', error);
+//     }
+//   };
+//   useEffect(() => {
+//     if (enable) {
+//       const pageRole = pages.find(
+//         (item: TAuthSetting['pages'][number]) => item.documentId.uid === pathname
+//       );
+//       if (pageRole?.required) {
+//         const roles = pageRole?.roles?.map((item) => item.value);
+//         const role = localStorage.getItem('role') || localStorage.getItem('ROLE') || '';
+//         const check = () => {
+//           return roles?.includes(role);
+//         };
+//         const checkRole = check();
+
+//         if (!checkRole) {
+//           if (entryPage) {
+//             router.push(entryPage);
+//           }
+//         }
+//       }
+//     }
+//   }, [enable, findVariable, entryPage, pages, pathname, router]);
+//   useEffect(() => {
+//     if (!projectId) return;
+//     async function fetchData() {
+//       await Promise.all([
+//         getStates(),
+//         getActions(),
+//         getApiCall(),
+//         getCustomFunctions(),
+//         getAuthSettings(),
+//       ]);
+//     }
+//     fetchData();
+//   }, [uid, projectId]);
+
+//   return {
+//     isLoading,
+//     selectedBodyLayout,
+//     deviceType,
+//   };
+// };
+
+
 export const useInitStateRender = () => {
-  const pathname = usePathname(); // /detail/123
+  const pathname = usePathname();
   const [matchingPattern, setMatchingPattern] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Đảm bảo chỉ chạy trên client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
-    fetch('/api/route-patterns')
-      .then((res) => res.json())
-      .then((data) => {
+    // Chỉ chạy khi đã ở client và có pathname
+    if (!isClient || !pathname) return;
+
+    const fetchRoutePattern = async () => {
+      try {
+        console.log('Fetching route patterns for:', pathname);
+        
+        const response = await fetch('/api/route-patterns', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Route patterns data:', data);
+        
         const matched = getMatchingRoutePattern(pathname, data);
-        console.log('matched', matched)
+        console.log('Matched pattern:', { pathname, matched });
+        
         setMatchingPattern(matched);
-      })
-      .catch((error) => console.error('Error fetching patterns:', error));
-  }, [pathname]);
+      } catch (error) {
+        console.error('Error fetching route patterns:', error);
+        // Fallback về pathname nếu không fetch được
+        setMatchingPattern(pathname);
+      }
+    };
+
+    fetchRoutePattern();
+  }, [pathname, isClient]);
 
   const { addAndUpdateApiResource } = apiResourceStore();
   const { setStateManagement, findVariable } = stateManagementStore();
@@ -160,6 +364,13 @@ export const useInitStateRender = () => {
   const router = useRouter();
 
   const uid = matchingPattern;
+
+  console.log('Current state:', {
+    pathname,
+    uid,
+    isClient,
+    matchingPattern,
+  });
 
   const setCustomFunctions = customFunctionStore((state) => state.setCustomFunctions);
   const { setActions } = actionsStore();
@@ -229,13 +440,13 @@ export const useInitStateRender = () => {
   const getActions = async () => {
     try {
       const result = await actionService.getData({
-        uid: uid,
+        uid: uid || '/',
         projectId: projectId || process.env.NEXT_PUBLIC_PROJECT_ID || '',
       });
       if (_.isEmpty(result?.data?.data)) return;
       setActions(result.data.data);
     } catch (error) {
-      console.log('🚀 ~ getStates ~ error:', error);
+      console.log('🚀 ~ getActions ~ error:', error);
     }
   };
 
@@ -249,10 +460,11 @@ export const useInitStateRender = () => {
       console.log('🚀 ~ getApiCall ~ error:', error);
     }
   };
+
   const getCustomFunctions = async () => {
     try {
       const result = await customFunctionService.getAll({
-        uid: uid || '',
+        uid: uid || '/',
         projectId: projectId || process.env.NEXT_PUBLIC_PROJECT_ID || '',
       });
       setCustomFunctions(result.data);
@@ -260,6 +472,7 @@ export const useInitStateRender = () => {
       console.log('🚀 ~ getCustomFunctions ~ error:', error);
     }
   };
+
   const getAuthSettings = async () => {
     try {
       const result = await authSettingService.get({ projectId });
@@ -268,6 +481,7 @@ export const useInitStateRender = () => {
       console.log('🚀 ~ getAuthSettings ~ error:', error);
     }
   };
+
   useEffect(() => {
     if (enable) {
       const pageRole = pages.find(
@@ -289,8 +503,10 @@ export const useInitStateRender = () => {
       }
     }
   }, [enable, findVariable, entryPage, pages, pathname, router]);
+
   useEffect(() => {
-    if (!projectId) return;
+    if (!projectId || !uid) return;
+    
     async function fetchData() {
       await Promise.all([
         getStates(),
