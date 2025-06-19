@@ -147,6 +147,7 @@ export const useInitStateRender = () => {
       .then((res) => res.json())
       .then((data) => {
         const matched = getMatchingRoutePattern(pathname, data);
+        console.log('matched', matched)
         setMatchingPattern(matched);
       })
       .catch((error) => console.error('Error fetching patterns:', error));
