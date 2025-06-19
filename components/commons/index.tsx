@@ -18,6 +18,4 @@ export const components = {
   Tabs: dynamic(() => import('./Tabs')),
   Table: dynamic(() => import('./Table')),
   LoginForm: dynamic(() => import('./LoginForm')),
-  ListDrivers: dynamic(() => import('./ListDrivers')),
-  CustomWidget4b395dfd97c9: dynamic(() => import("./CustomWidget4b395dfd97c9")),
-};
+  ListDrivers: dynamic(() => import('./ListDrivers')),};
