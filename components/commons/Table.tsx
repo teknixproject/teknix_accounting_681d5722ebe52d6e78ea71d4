@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import _ from 'lodash';
@@ -6,9 +7,9 @@ import { RenderGrid, RenderSlice } from '../grid-systems';
 
 interface TableProps {
   id?: string;
-  style?: any;
   data?: any;
   styleDevice?: string;
+  [key: string]: unknown;
 }
 
 const optionsRender: any = {
@@ -17,7 +18,7 @@ const optionsRender: any = {
   tfoot: 'footers',
 };
 
-const Table = ({ data = {}, styleDevice }: TableProps) => {
+const Table = ({ data = {}, styleDevice, ...props }: TableProps) => {
   const tableConstructor = _.get(data, 'dataSlice.table');
 
   const styleTable = data?.dataSlice?.table?.style_table || {};
