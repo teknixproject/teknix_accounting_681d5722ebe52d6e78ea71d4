@@ -20,4 +20,5 @@ export const components = {
   LoginForm: dynamic(() => import('./LoginForm')),
   ListDrivers: dynamic(() => import('./ListDrivers')),  CustomWidgeta44b59665e03: dynamic(() => import("./CustomWidgeta44b59665e03")),
   CustomWidget29d7c8efd5af: dynamic(() => import("./CustomWidget29d7c8efd5af")),
+  CustomWidget8eab84be4dde: dynamic(() => import("./CustomWidget8eab84be4dde")),
 };
