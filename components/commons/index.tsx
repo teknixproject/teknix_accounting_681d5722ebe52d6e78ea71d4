@@ -22,4 +22,5 @@ export const components = {
   CustomWidget3d7a58493472: dynamic(() => import("./CustomWidget3d7a58493472")),
   CustomWidgeta44b59665e03: dynamic(() => import("./CustomWidgeta44b59665e03")),
   CustomWidgeta5c07b174292: dynamic(() => import("./CustomWidgeta5c07b174292")),
+  CustomWidgetd19b64160589: dynamic(() => import("./CustomWidgetd19b64160589")),
 };
