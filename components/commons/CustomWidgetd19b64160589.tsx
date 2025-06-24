@@ -18,142 +18,229 @@ interface OnClickProps {
 
 const TableHeader: React.FC = () => {
   return (
-    <thead className="bg-gray-100 border-b-2 border-gray-300">
+    <thead className="bg-gray-50 border-b">
       <tr>
-        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 w-1/5">
-          Tên
+        <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200">
+          Ngày hóa đơn
         </th>
-        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 w-1/6">
-          Mã
+        <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200">
+          Số hóa đơn
         </th>
-        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 w-1/4">
-          Giảm 2% thuế suất thuế GTGT
+        <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200">
+          Mẫu số
         </th>
-        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300 w-1/8">
-          Số lượng tồn
+        <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200">
+          Ký hiệu
         </th>
-        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-1/3">
-          Tính chất
+        <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200">
+          Khách hàng
+        </th>
+        <th className="px-4 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200">
+          Mã số thuế
+        </th>
+        <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200">
+          Tiền hàng
+        </th>
+        <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200">
+          Tiền thuế
+        </th>
+        <th className="px-4 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider border-r border-gray-200">
+          Giá trị hóa đơn
+        </th>
+        <th className="px-4 py-3 text-center text-xs font-medium text-gray-600 uppercase tracking-wider">
+          
         </th>
       </tr>
     </thead>
   );
 };
 
-const ProductCell: React.FC<{
-  children: React.ReactNode;
-  className?: string;
-  isLast?: boolean;
-  onClick?: MouseEventHandler<HTMLElement>;
-}> = ({ children, className = '', isLast = false, onClick }) => {
-  const borderClass = isLast ? '' : 'border-r border-gray-200';
-  
-  return (
-    <td 
-      className={`px-4 py-4 text-sm text-gray-800 ${borderClass} ${className}`}
-      onClick={onClick}
-    >
-      {children}
-    </td>
-  );
-};
-
-const ProductRow: React.FC<{
-  product: any;
+const InvoiceRow: React.FC<{
+  invoice: any;
   isEven: boolean;
   onClickRow?: MouseEventHandler<HTMLElement>;
-}> = ({ product, isEven, onClickRow }) => {
-  const name = _.get(product, 'name', '');
-  const code = _.get(product, 'code', '');
-  const vatDiscount = _.get(product, 'vatDiscount', 'Không xác định');
-  const stockQuantity = _.get(product, 'stockQuantity', 0);
-  const category = _.get(product, 'category', '');
+  onClickAction?: MouseEventHandler<HTMLElement>;
+}> = ({ invoice, isEven, onClickRow, onClickAction }) => {
+  const invoiceDate = _.get(invoice, 'invoiceDate', '');
+  const invoiceNumber = _.get(invoice, 'invoiceNumber', '');
+  const templateNumber = _.get(invoice, 'templateNumber', '');
+  const symbol = _.get(invoice, 'symbol', '');
+  const customerName = _.get(invoice, 'customerName', '');
+  const taxCode = _.get(invoice, 'taxCode', '');
+  const amount = _.get(invoice, 'amount', 0);
+  const taxAmount = _.get(invoice, 'taxAmount', 0);
+  const totalAmount = _.get(invoice, 'totalAmount', 0);
 
   const bgColor = isEven ? 'bg-white' : 'bg-gray-50';
 
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('vi-VN').format(num);
+  };
+
   return (
     <tr 
-      className={`${bgColor} hover:bg-blue-50 transition-colors duration-200 border-b border-gray-200 cursor-pointer`}
+      className={`${bgColor} hover:bg-blue-50 transition-colors duration-150 border-b border-gray-100 cursor-pointer`}
       onClick={onClickRow}
     >
-      <ProductCell className="font-medium text-gray-900">
-        {name}
-      </ProductCell>
-      <ProductCell className="font-mono text-blue-600 font-semibold">
-        {code}
-      </ProductCell>
-      <ProductCell className="text-gray-600">
-        {vatDiscount}
-      </ProductCell>
-      <ProductCell className="text-center font-bold text-lg text-gray-900">
-        {stockQuantity}
-      </ProductCell>
-      <ProductCell className="text-gray-700" isLast>
-        <div className="max-w-xs">
-          <span className="text-sm leading-relaxed break-words">
-            {category}
-          </span>
+      <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-100">
+        {invoiceDate}
+      </td>
+      <td className="px-4 py-3 text-sm text-blue-600 font-medium border-r border-gray-100">
+        {invoiceNumber}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-100">
+        {templateNumber}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-100">
+        {symbol}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-900 border-r border-gray-100 max-w-xs">
+        <div className="truncate" title={customerName}>
+          {customerName}
         </div>
-      </ProductCell>
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-900 font-mono border-r border-gray-100">
+        {taxCode}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-900 text-right font-medium border-r border-gray-100">
+        {formatNumber(amount)}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-900 text-right font-medium border-r border-gray-100">
+        {formatNumber(taxAmount)}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-900 text-right font-bold border-r border-gray-100">
+        {formatNumber(totalAmount)}
+      </td>
+      <td className="px-4 py-3 text-center">
+        <div className="relative">
+          <button
+            onClick={onClickAction}
+            className="text-blue-600 hover:text-blue-800 text-sm font-medium flex items-center space-x-1"
+          >
+            <span>Lập chứng từ kết nộp.Sửa</span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+      </td>
     </tr>
   );
 };
 
-const SummaryCard: React.FC<{
-  title: string;
-  value: number;
-  icon: React.ReactNode;
-  color: string;
-}> = ({ title, value, icon, color }) => {
+const SummaryBar: React.FC<{
+  totalInvoices: number;
+  totalAmount: number;
+  totalTax: number;
+  totalValue: number;
+}> = ({ totalInvoices, totalAmount, totalTax, totalValue }) => {
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('vi-VN').format(num);
+  };
+
   return (
-    <div className={`bg-white p-4 rounded-lg shadow border-l-4 ${color}`}>
-      <div className="flex items-center">
-        <div className="flex-shrink-0">
-          {icon}
+    <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-6 rounded-lg shadow-lg mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="text-center">
+          <p className="text-blue-100 text-sm">Tổng số hóa đơn</p>
+          <p className="text-2xl font-bold">{totalInvoices}</p>
         </div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
+        <div className="text-center">
+          <p className="text-blue-100 text-sm">Tổng tiền hàng</p>
+          <p className="text-xl font-semibold">{formatNumber(totalAmount)}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-blue-100 text-sm">Tổng tiền thuế</p>
+          <p className="text-xl font-semibold">{formatNumber(totalTax)}</p>
+        </div>
+        <div className="text-center">
+          <p className="text-blue-100 text-sm">Tổng giá trị</p>
+          <p className="text-2xl font-bold">{formatNumber(totalValue)}</p>
         </div>
       </div>
     </div>
   );
 };
 
-const FilterControls: React.FC<{
-  onFilterChange?: (filter: string) => void;
-  onSortChange?: (sort: string) => void;
-}> = ({ onFilterChange, onSortChange }) => {
+const SearchAndFilter: React.FC<{
+  onSearch?: (term: string) => void;
+  onDateFilter?: (startDate: string, endDate: string) => void;
+  onClickExport?: MouseEventHandler<HTMLElement>;
+}> = ({ onSearch, onDateFilter, onClickExport }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    onSearch?.(value);
+  };
+
+  const handleDateFilter = () => {
+    onDateFilter?.(startDate, endDate);
+  };
+
   return (
-    <div className="mb-6 flex flex-wrap gap-4 items-center">
-      <div className="flex items-center space-x-2">
-        <label className="text-sm font-medium text-gray-700">Lọc theo:</label>
-        <select 
-          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-          onChange={(e) => onFilterChange?.(e.target.value)}
+    <div className="mb-6 space-y-4">
+      <div className="flex flex-wrap gap-4 items-center justify-between">
+        <div className="flex items-center space-x-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo số hóa đơn, khách hàng..."
+              value={searchTerm}
+              onChange={handleSearch}
+              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-80 text-sm"
+            />
+            <svg
+              className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+        </div>
+        <button
+          onClick={onClickExport}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150 flex items-center space-x-2"
         >
-          <option value="">Tất cả</option>
-          <option value="service">Dịch vụ</option>
-          <option value="goods">Hàng hoá</option>
-          <option value="tools">Công cụ dụng cụ</option>
-        </select>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span>Xuất Excel</span>
+        </button>
       </div>
-      <div className="flex items-center space-x-2">
-        <label className="text-sm font-medium text-gray-700">Sắp xếp:</label>
-        <select 
+      
+      <div className="flex items-center space-x-4">
+        <span className="text-sm font-medium text-gray-700">Lọc theo ngày:</span>
+        <input
+          type="date"
+          value={startDate}
+          onChange={(e) => setStartDate(e.target.value)}
           className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-          onChange={(e) => onSortChange?.(e.target.value)}
+        />
+        <span className="text-gray-500">đến</span>
+        <input
+          type="date"
+          value={endDate}
+          onChange={(e) => setEndDate(e.target.value)}
+          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          onClick={handleDateFilter}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
         >
-          <option value="name">Tên A-Z</option>
-          <option value="code">Mã</option>
-          <option value="quantity">Số lượng</option>
-        </select>
+          Áp dụng
+        </button>
       </div>
     </div>
   );
 };
 
-const InventoryTable: React.FC<OnClickProps> = ({
+const InvoiceManagement: React.FC<OnClickProps> = ({
   id,
   style,
   className,
@@ -161,156 +248,106 @@ const InventoryTable: React.FC<OnClickProps> = ({
   items,
   ...props
 }) => {
-  const [filter, setFilter] = useState('');
-  const [sort, setSort] = useState('name');
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const defaultInventory = [
+  const defaultInvoices = [
     {
       id: 1,
-      name: 'Bán lâm việc',
-      code: 'BLV_1',
-      vatDiscount: 'Không xác định',
-      stockQuantity: 10,
-      category: 'Hàng Công Thành Hàng Nguyên Dịch hoá, cụ phẩm, hoá, vật liệu, vụ, dụng cư,'
+      invoiceDate: '7/2/2025',
+      invoiceNumber: '00000001',
+      templateNumber: 'C22TEC',
+      symbol: 'CÔNG TY TNHH TEXNIKA E&C',
+      customerName: 'CÔNG TY TNHH TEXNIKA E&C',
+      taxCode: '0310391960',
+      amount: 1233333,
+      taxAmount: 246667,
+      totalAmount: 1480000
     },
     {
       id: 2,
-      name: 'Chi phí mua hàng',
-      code: 'CPMH',
-      vatDiscount: 'Không xác định',
-      stockQuantity: 0,
-      category: 'Dịch vụ'
-    },
-    {
-      id: 3,
-      name: 'Chi phí vận chuyển',
-      code: 'CPVC',
-      vatDiscount: 'Không xác định',
-      stockQuantity: 0,
-      category: 'Dịch vụ'
-    },
-    {
-      id: 4,
-      name: 'Công cụ dụng cụ',
-      code: 'CCDC',
-      vatDiscount: 'Không xác định',
-      stockQuantity: 0,
-      category: 'Công cụ dụng cụ'
-    },
-    {
-      id: 5,
-      name: 'Bộ cấu 1 khối 38 + LT35LL T loại AA L1',
-      code: 'BOCAU_AAL1',
-      vatDiscount: 'Không xác định',
-      stockQuantity: 5,
-      category: 'Hàng hoá'
+      invoiceDate: '13/2/2025',
+      invoiceNumber: '121',
+      templateNumber: 'C22TLN',
+      symbol: 'CÔNG TY TNHH MỘT THÀNH VIÊN THƯƠNG MẠI VÀ DỊCH VỤ LỐC NGHI',
+      customerName: 'CÔNG TY TNHH MỘT THÀNH VIÊN THƯƠNG MẠI VÀ DỊCH VỤ LỐC NGHI',
+      taxCode: '1801580658',
+      amount: 342593,
+      taxAmount: 27407,
+      totalAmount: 370000
     }
   ];
 
-  const safeItems = _.isArray(items) && items.length > 0 ? items : defaultInventory;
-  const inventory = _.get(data, 'inventory', safeItems);
+  const safeItems = _.isArray(items) && items.length > 0 ? items : defaultInvoices;
+  const invoices = _.get(data, 'invoices', safeItems);
 
-  const filteredInventory = _.filter(inventory, (item) => {
-    if (!filter) return true;
-    const category = _.get(item, 'category', '').toLowerCase();
-    switch (filter) {
-      case 'service':
-        return category.includes('dịch vụ');
-      case 'goods':
-        return category.includes('hàng hoá');
-      case 'tools':
-        return category.includes('công cụ');
-      default:
-        return true;
-    }
+  const filteredInvoices = _.filter(invoices, (invoice) => {
+    if (!searchTerm) return true;
+    const searchFields = [
+      _.get(invoice, 'invoiceNumber', ''),
+      _.get(invoice, 'customerName', ''),
+      _.get(invoice, 'taxCode', '')
+    ];
+    return searchFields.some(field => 
+      field.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   });
 
-  const sortedInventory = _.sortBy(filteredInventory, (item) => {
-    switch (sort) {
-      case 'code':
-        return _.get(item, 'code', '');
-      case 'quantity':
-        return _.get(item, 'stockQuantity', 0);
-      default:
-        return _.get(item, 'name', '');
-    }
-  });
+  const totalInvoices = filteredInvoices.length;
+  const totalAmount = _.sumBy(filteredInvoices, 'amount');
+  const totalTax = _.sumBy(filteredInvoices, 'taxAmount');
+  const totalValue = _.sumBy(filteredInvoices, 'totalAmount');
 
-  const totalItems = inventory.length;
-  const totalInStock = _.sumBy(inventory, 'stockQuantity');
-  const outOfStock = _.filter(inventory, item => _.get(item, 'stockQuantity', 0) === 0).length;
+  const handleRowClick = (invoice: any) => (event: React.MouseEvent) => {
+    props.onClickInvoice?.(event);
+  };
 
-  const handleRowClick = (product: any) => (event: React.MouseEvent) => {
-    props.onClickProduct?.(event);
+  const handleActionClick = (invoice: any) => (event: React.MouseEvent) => {
+    event.stopPropagation();
+    props.onClickAction?.(event);
   };
 
   return (
     <div id={id} style={style} className={`w-full max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen ${className ?? ''}`}>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Bảng kê khai hàng tồn kho</h1>
-        <p className="text-gray-600">Quản lý và theo dõi tình trạng hàng hóa trong kho</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Quản lý hóa đơn</h1>
+        <p className="text-gray-600">Theo dõi và quản lý các hóa đơn bán hàng</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <SummaryCard
-          title="Tổng sản phẩm"
-          value={totalItems}
-          color="border-l-blue-500"
-          icon={
-            <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-          }
-        />
-        <SummaryCard
-          title="Tổng số lượng"
-          value={totalInStock}
-          color="border-l-green-500"
-          icon={
-            <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-          }
-        />
-        <SummaryCard
-          title="Hết hàng"
-          value={outOfStock}
-          color="border-l-red-500"
-          icon={
-            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.856-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
-            </svg>
-          }
-        />
-      </div>
-
-      <FilterControls 
-        onFilterChange={setFilter}
-        onSortChange={setSort}
+      <SummaryBar
+        totalInvoices={totalInvoices}
+        totalAmount={totalAmount}
+        totalTax={totalTax}
+        totalValue={totalValue}
       />
 
-      <div className="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200">
+      <SearchAndFilter
+        onSearch={setSearchTerm}
+        onClickExport={props.onClickExport}
+      />
+
+      <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table className="min-w-full">
             <TableHeader />
-            <tbody className="bg-white divide-y divide-gray-200">
-              {sortedInventory.map((product: any, index: number) => (
-                <ProductRow
-                  key={_.get(product, 'id', index)}
-                  product={product}
+            <tbody>
+              {filteredInvoices.map((invoice: any, index: number) => (
+                <InvoiceRow
+                  key={_.get(invoice, 'id', index)}
+                  invoice={invoice}
                   isEven={index % 2 === 0}
-                  onClickRow={handleRowClick(product)}
+                  onClickRow={handleRowClick(invoice)}
+                  onClickAction={handleActionClick(invoice)}
                 />
               ))}
-              {sortedInventory.length === 0 && (
+              {filteredInvoices.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center">
+                  <td colSpan={10} className="px-4 py-12 text-center">
                     <div className="text-gray-500">
                       <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707v11a2 2 0 01-2 2z" />
                       </svg>
-                      <p className="text-lg font-medium">Không có dữ liệu</p>
-                      <p className="text-sm">Không tìm thấy sản phẩm nào phù hợp với bộ lọc</p>
+                      <p className="text-lg font-medium">Không có hóa đơn nào</p>
+                      <p className="text-sm">Không tìm thấy hóa đơn phù hợp với điều kiện tìm kiếm</p>
                     </div>
                   </td>
                 </tr>
@@ -320,11 +357,22 @@ const InventoryTable: React.FC<OnClickProps> = ({
         </div>
       </div>
 
-      <div className="mt-6 text-center text-sm text-gray-500">
-        Hiển thị {sortedInventory.length} trên tổng {totalItems} sản phẩm
+      <div className="mt-6 flex justify-between items-center text-sm text-gray-600">
+        <span>Hiển thị {filteredInvoices.length} hóa đơn</span>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={props.onClickPrint}
+            className="text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+            </svg>
+            <span>In báo cáo</span>
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default InventoryTable;
+export default InvoiceManagement;
