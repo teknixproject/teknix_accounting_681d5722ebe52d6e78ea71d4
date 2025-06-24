@@ -16,14 +16,41 @@ interface OnClickProps {
   [key: `onBlur${string}`]?: MouseEventHandler<HTMLInputElement> | undefined;
 }
 
-const TableCell: React.FC<{
+const TableHeader: React.FC = () => {
+  return (
+    <thead className="bg-gray-100 border-b-2 border-gray-300">
+      <tr>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 w-1/5">
+          Tên
+        </th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 w-1/6">
+          Mã
+        </th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 border-r border-gray-300 w-1/4">
+          Giảm 2% thuế suất thuế GTGT
+        </th>
+        <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700 border-r border-gray-300 w-1/8">
+          Số lượng tồn
+        </th>
+        <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700 w-1/3">
+          Tính chất
+        </th>
+      </tr>
+    </thead>
+  );
+};
+
+const ProductCell: React.FC<{
   children: React.ReactNode;
   className?: string;
+  isLast?: boolean;
   onClick?: MouseEventHandler<HTMLElement>;
-}> = ({ children, className = '', onClick }) => {
+}> = ({ children, className = '', isLast = false, onClick }) => {
+  const borderClass = isLast ? '' : 'border-r border-gray-200';
+  
   return (
     <td 
-      className={`px-4 py-3 text-sm text-gray-800 border-r border-gray-200 ${className}`}
+      className={`px-4 py-4 text-sm text-gray-800 ${borderClass} ${className}`}
       onClick={onClick}
     >
       {children}
@@ -31,168 +58,102 @@ const TableCell: React.FC<{
   );
 };
 
-const TableHeaderCell: React.FC<{
-  children: React.ReactNode;
-  className?: string;
-}> = ({ children, className = '' }) => {
-  return (
-    <th className={`px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider bg-gray-100 border-r border-gray-200 ${className}`}>
-      {children}
-    </th>
-  );
-};
-
 const ProductRow: React.FC<{
   product: any;
-  index: number;
-  onClickEdit?: MouseEventHandler<HTMLElement>;
-  onClickDelete?: MouseEventHandler<HTMLElement>;
-}> = ({ product, index, onClickEdit, onClickDelete }) => {
+  isEven: boolean;
+  onClickRow?: MouseEventHandler<HTMLElement>;
+}> = ({ product, isEven, onClickRow }) => {
   const name = _.get(product, 'name', '');
   const code = _.get(product, 'code', '');
   const vatDiscount = _.get(product, 'vatDiscount', 'Không xác định');
-  const quantity = _.get(product, 'quantity', 0);
+  const stockQuantity = _.get(product, 'stockQuantity', 0);
   const category = _.get(product, 'category', '');
 
-  const rowBgColor = index % 2 === 0 ? 'bg-white' : 'bg-gray-50';
+  const bgColor = isEven ? 'bg-white' : 'bg-gray-50';
 
   return (
-    <tr className={`${rowBgColor} hover:bg-blue-50 transition-colors duration-150 border-b border-gray-200`}>
-      <TableCell className="font-medium">
+    <tr 
+      className={`${bgColor} hover:bg-blue-50 transition-colors duration-200 border-b border-gray-200 cursor-pointer`}
+      onClick={onClickRow}
+    >
+      <ProductCell className="font-medium text-gray-900">
         {name}
-      </TableCell>
-      <TableCell className="text-center font-mono">
+      </ProductCell>
+      <ProductCell className="font-mono text-blue-600 font-semibold">
         {code}
-      </TableCell>
-      <TableCell className="text-center">
+      </ProductCell>
+      <ProductCell className="text-gray-600">
         {vatDiscount}
-      </TableCell>
-      <TableCell className="text-center font-semibold">
-        {quantity}
-      </TableCell>
-      <TableCell className="border-r-0">
+      </ProductCell>
+      <ProductCell className="text-center font-bold text-lg text-gray-900">
+        {stockQuantity}
+      </ProductCell>
+      <ProductCell className="text-gray-700" isLast>
         <div className="max-w-xs">
-          <span className="text-xs leading-tight">{category}</span>
+          <span className="text-sm leading-relaxed break-words">
+            {category}
+          </span>
         </div>
-      </TableCell>
-      <TableCell className="border-r-0">
-        <div className="flex space-x-2">
-          <button
-            onClick={onClickEdit}
-            className="text-blue-600 hover:text-blue-800 text-xs font-medium"
-          >
-            Sửa
-          </button>
-          <button
-            onClick={onClickDelete}
-            className="text-red-600 hover:text-red-800 text-xs font-medium"
-          >
-            Xóa
-          </button>
-        </div>
-      </TableCell>
+      </ProductCell>
     </tr>
   );
 };
 
-const SearchBar: React.FC<{
-  onSearch?: (value: string) => void;
-  onClickAddNew?: MouseEventHandler<HTMLElement>;
-}> = ({ onSearch, onClickAddNew }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchTerm(value);
-    onSearch?.(value);
-  };
-
+const SummaryCard: React.FC<{
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+  color: string;
+}> = ({ title, value, icon, color }) => {
   return (
-    <div className="mb-6 flex justify-between items-center">
-      <div className="flex items-center space-x-4">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Tìm kiếm theo tên hoặc mã..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-            className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-80 text-sm"
-          />
-          <svg
-            className="absolute left-3 top-2.5 h-5 w-5 text-gray-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+    <div className={`bg-white p-4 rounded-lg shadow border-l-4 ${color}`}>
+      <div className="flex items-center">
+        <div className="flex-shrink-0">
+          {icon}
+        </div>
+        <div className="ml-4">
+          <p className="text-sm font-medium text-gray-600">{title}</p>
+          <p className="text-2xl font-bold text-gray-900">{value}</p>
         </div>
       </div>
-      <button
-        onClick={onClickAddNew}
-        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-150 flex items-center space-x-2"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-        </svg>
-        <span>Thêm mới</span>
-      </button>
     </div>
   );
 };
 
-const Pagination: React.FC<{
-  currentPage: number;
-  totalPages: number;
-  totalItems: number;
-  onClickPrevious?: MouseEventHandler<HTMLElement>;
-  onClickNext?: MouseEventHandler<HTMLElement>;
-  onClickPage?: (page: number) => void;
-}> = ({ currentPage, totalPages, totalItems, onClickPrevious, onClickNext, onClickPage }) => {
+const FilterControls: React.FC<{
+  onFilterChange?: (filter: string) => void;
+  onSortChange?: (sort: string) => void;
+}> = ({ onFilterChange, onSortChange }) => {
   return (
-    <div className="mt-6 flex justify-between items-center">
-      <div className="text-sm text-gray-700">
-        Hiển thị <span className="font-medium">{Math.min(currentPage * 10 - 9, totalItems)}</span> đến{' '}
-        <span className="font-medium">{Math.min(currentPage * 10, totalItems)}</span> của{' '}
-        <span className="font-medium">{totalItems}</span> kết quả
+    <div className="mb-6 flex flex-wrap gap-4 items-center">
+      <div className="flex items-center space-x-2">
+        <label className="text-sm font-medium text-gray-700">Lọc theo:</label>
+        <select 
+          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+          onChange={(e) => onFilterChange?.(e.target.value)}
+        >
+          <option value="">Tất cả</option>
+          <option value="service">Dịch vụ</option>
+          <option value="goods">Hàng hoá</option>
+          <option value="tools">Công cụ dụng cụ</option>
+        </select>
       </div>
       <div className="flex items-center space-x-2">
-        <button
-          onClick={onClickPrevious}
-          disabled={currentPage <= 1}
-          className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        <label className="text-sm font-medium text-gray-700">Sắp xếp:</label>
+        <select 
+          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+          onChange={(e) => onSortChange?.(e.target.value)}
         >
-          Trước
-        </button>
-        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-          const page = i + 1;
-          return (
-            <button
-              key={page}
-              onClick={() => onClickPage?.(page)}
-              className={`px-3 py-1 text-sm border rounded ${
-                page === currentPage
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              {page}
-            </button>
-          );
-        })}
-        <button
-          onClick={onClickNext}
-          disabled={currentPage >= totalPages}
-          className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Tiếp
-        </button>
+          <option value="name">Tên A-Z</option>
+          <option value="code">Mã</option>
+          <option value="quantity">Số lượng</option>
+        </select>
       </div>
     </div>
   );
 };
 
-const ProductInventoryTable: React.FC<OnClickProps> = ({
+const InventoryTable: React.FC<OnClickProps> = ({
   id,
   style,
   className,
@@ -200,24 +161,24 @@ const ProductInventoryTable: React.FC<OnClickProps> = ({
   items,
   ...props
 }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState('');
+  const [sort, setSort] = useState('name');
 
-  const defaultProducts = [
+  const defaultInventory = [
     {
       id: 1,
       name: 'Bán lâm việc',
-      code: 'BLV_I',
+      code: 'BLV_1',
       vatDiscount: 'Không xác định',
-      quantity: 10,
-      category: 'Hàng Công Thành Hàng Nguyên Dịch Công Thành Hàng Nguyên Dịch Công Thành hoá, cụ phẩm, hoá, vật liệu, vụ, cụ phẩm, hoá, vật liệu, vụ, cụ phẩm dụng cư'
+      stockQuantity: 10,
+      category: 'Hàng Công Thành Hàng Nguyên Dịch hoá, cụ phẩm, hoá, vật liệu, vụ, dụng cư,'
     },
     {
       id: 2,
       name: 'Chi phí mua hàng',
       code: 'CPMH',
       vatDiscount: 'Không xác định',
-      quantity: 0,
+      stockQuantity: 0,
       category: 'Dịch vụ'
     },
     {
@@ -225,7 +186,7 @@ const ProductInventoryTable: React.FC<OnClickProps> = ({
       name: 'Chi phí vận chuyển',
       code: 'CPVC',
       vatDiscount: 'Không xác định',
-      quantity: 0,
+      stockQuantity: 0,
       category: 'Dịch vụ'
     },
     {
@@ -233,7 +194,7 @@ const ProductInventoryTable: React.FC<OnClickProps> = ({
       name: 'Công cụ dụng cụ',
       code: 'CCDC',
       vatDiscount: 'Không xác định',
-      quantity: 0,
+      stockQuantity: 0,
       category: 'Công cụ dụng cụ'
     },
     {
@@ -241,82 +202,116 @@ const ProductInventoryTable: React.FC<OnClickProps> = ({
       name: 'Bộ cấu 1 khối 38 + LT35LL T loại AA L1',
       code: 'BOCAU_AAL1',
       vatDiscount: 'Không xác định',
-      quantity: 5,
+      stockQuantity: 5,
       category: 'Hàng hoá'
     }
   ];
 
-  const safeItems = _.isArray(items) && items.length > 0 ? items : defaultProducts;
-  const products = _.get(data, 'products', safeItems);
+  const safeItems = _.isArray(items) && items.length > 0 ? items : defaultInventory;
+  const inventory = _.get(data, 'inventory', safeItems);
 
-  const filteredProducts = _.filter(products, (product) => {
-    if (!searchTerm) return true;
-    const name = _.get(product, 'name', '').toLowerCase();
-    const code = _.get(product, 'code', '').toLowerCase();
-    return name.includes(searchTerm.toLowerCase()) || code.includes(searchTerm.toLowerCase());
+  const filteredInventory = _.filter(inventory, (item) => {
+    if (!filter) return true;
+    const category = _.get(item, 'category', '').toLowerCase();
+    switch (filter) {
+      case 'service':
+        return category.includes('dịch vụ');
+      case 'goods':
+        return category.includes('hàng hoá');
+      case 'tools':
+        return category.includes('công cụ');
+      default:
+        return true;
+    }
   });
 
-  const itemsPerPage = 10;
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentProducts = filteredProducts.slice(startIndex, startIndex + itemsPerPage);
+  const sortedInventory = _.sortBy(filteredInventory, (item) => {
+    switch (sort) {
+      case 'code':
+        return _.get(item, 'code', '');
+      case 'quantity':
+        return _.get(item, 'stockQuantity', 0);
+      default:
+        return _.get(item, 'name', '');
+    }
+  });
 
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    setCurrentPage(1);
-  };
+  const totalItems = inventory.length;
+  const totalInStock = _.sumBy(inventory, 'stockQuantity');
+  const outOfStock = _.filter(inventory, item => _.get(item, 'stockQuantity', 0) === 0).length;
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-  };
-
-  const handlePrevious = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-
-  const handleNext = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  const handleRowClick = (product: any) => (event: React.MouseEvent) => {
+    props.onClickProduct?.(event);
   };
 
   return (
-    <div id={id} style={style} className={`w-full max-w-7xl mx-auto p-6 bg-white ${className ?? ''}`}>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Quản lý hàng hóa</h1>
-        <p className="text-gray-600">Danh sách các sản phẩm và dịch vụ trong kho</p>
+    <div id={id} style={style} className={`w-full max-w-7xl mx-auto p-6 bg-gray-50 min-h-screen ${className ?? ''}`}>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Bảng kê khai hàng tồn kho</h1>
+        <p className="text-gray-600">Quản lý và theo dõi tình trạng hàng hóa trong kho</p>
       </div>
 
-      <SearchBar 
-        onSearch={handleSearch}
-        onClickAddNew={props.onClickAddNew}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <SummaryCard
+          title="Tổng sản phẩm"
+          value={totalItems}
+          color="border-l-blue-500"
+          icon={
+            <svg className="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+          }
+        />
+        <SummaryCard
+          title="Tổng số lượng"
+          value={totalInStock}
+          color="border-l-green-500"
+          icon={
+            <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          }
+        />
+        <SummaryCard
+          title="Hết hàng"
+          value={outOfStock}
+          color="border-l-red-500"
+          icon={
+            <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.856-.833-2.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          }
+        />
+      </div>
+
+      <FilterControls 
+        onFilterChange={setFilter}
+        onSortChange={setSort}
       />
 
-      <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+      <div className="bg-white shadow-xl rounded-lg overflow-hidden border border-gray-200">
         <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <TableHeaderCell>Tên</TableHeaderCell>
-                <TableHeaderCell>Mã</TableHeaderCell>
-                <TableHeaderCell>Giảm 2% thuế suất thuế GTGT</TableHeaderCell>
-                <TableHeaderCell>Số lượng tồn</TableHeaderCell>
-                <TableHeaderCell>Tính chất</TableHeaderCell>
-                <TableHeaderCell className="border-r-0">Thao tác</TableHeaderCell>
-              </tr>
-            </thead>
-            <tbody>
-              {currentProducts.map((product: any, index: number) => (
+          <table className="min-w-full divide-y divide-gray-200">
+            <TableHeader />
+            <tbody className="bg-white divide-y divide-gray-200">
+              {sortedInventory.map((product: any, index: number) => (
                 <ProductRow
                   key={_.get(product, 'id', index)}
                   product={product}
-                  index={index}
-                  onClickEdit={props.onClickEdit}
-                  onClickDelete={props.onClickDelete}
+                  isEven={index % 2 === 0}
+                  onClickRow={handleRowClick(product)}
                 />
               ))}
-              {currentProducts.length === 0 && (
+              {sortedInventory.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
-                    Không tìm thấy sản phẩm nào
+                  <td colSpan={5} className="px-4 py-12 text-center">
+                    <div className="text-gray-500">
+                      <svg className="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                      </svg>
+                      <p className="text-lg font-medium">Không có dữ liệu</p>
+                      <p className="text-sm">Không tìm thấy sản phẩm nào phù hợp với bộ lọc</p>
+                    </div>
                   </td>
                 </tr>
               )}
@@ -325,16 +320,11 @@ const ProductInventoryTable: React.FC<OnClickProps> = ({
         </div>
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalItems={filteredProducts.length}
-        onClickPrevious={handlePrevious}
-        onClickNext={handleNext}
-        onClickPage={handlePageChange}
-      />
+      <div className="mt-6 text-center text-sm text-gray-500">
+        Hiển thị {sortedInventory.length} trên tổng {totalItems} sản phẩm
+      </div>
     </div>
   );
 };
 
-export default ProductInventoryTable;
+export default InventoryTable;
