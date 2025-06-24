@@ -9,55 +9,67 @@ interface OnClickProps {
   className?: string;
   data?: any;
   items?: any[];
+  onClickEdit?: MouseEventHandler<HTMLElement> | undefined;
+  onClickDelete?: MouseEventHandler<HTMLElement> | undefined;
   onClickRow?: MouseEventHandler<HTMLElement> | undefined;
-  onClickPrevious?: MouseEventHandler<HTMLElement> | undefined;
-  onClickNext?: MouseEventHandler<HTMLElement> | undefined;
   onClickPage?: MouseEventHandler<HTMLElement> | undefined;
 }
 
-const InvoiceTable: React.FC<OnClickProps> = ({
+const CustomerTable: React.FC<OnClickProps> = ({
   id,
   style,
   className,
   data,
   items,
+  onClickEdit,
+  onClickDelete,
   onClickRow,
-  onClickPrevious,
-  onClickNext,
   onClickPage,
   ...props
 }) => {
   const safeItems = _.isArray(items) ? items : [
     {
-      status: 'C25TLN',
-      symbol: '13/2/2025',
-      invoiceNumber: '121',
-      supplier: 'CÔNG TY TNHH MỘT THÀNH VIÊN THƯƠNG MẠI VÀ DỊCH VỤ LỐC NGHI'
+      customerCode: 'KH00001',
+      customerName: 'CÔNG TY TNHH CÔNG NGHỆ BWF',
+      address: '204-206 Võ Tòng Phan, Phường An Phú, Thành phố Thủ Đức, Thành phố Hồ Chí Minh, Việt Nam',
+      taxCode: '0317992733',
+      phone: '0916274654'
     },
     {
-      status: 'C25MAA',
-      symbol: '9/2/2025',
-      invoiceNumber: '233639',
-      supplier: 'CÔNG TY TNHH MM MEGA MARKET (VIỆT NAM)'
+      customerCode: 'KH00003',
+      customerName: 'CÔNG TY CỔ PHẦN 10 CHỨC ĐẠO TẠO WIT',
+      address: '152/14 Thành Thái, Phường 12, Quận 10, Thành phố Hồ Chí Minh, Việt Nam',
+      taxCode: '0316333568',
+      phone: ''
     },
     {
-      status: 'C25TBE',
-      symbol: '4/4/2025',
-      invoiceNumber: '218680',
-      supplier: 'CHI NHÁNH THÀNH PHỐ HỒ CHÍ MINH - CÔNG TY CỔ PHẦN DI CHUYỂN XANH VÀ THÔNG'
+      customerCode: 'KH00004',
+      customerName: 'CÔNG TY TNHH KỸ THUẬT CÔNG NGHỆ NGUYÊN THUẤN',
+      address: 'Số 201 Bông Sao, Phường 5, Quận 8, Thành phố Hồ Chí Minh, Việt Nam',
+      taxCode: '0316501732',
+      phone: ''
+    },
+    {
+      customerCode: 'KH00002',
+      customerName: 'CÔNG TY CỔ PHẦN CÔNG NGHỆ TEKNIX - CHI NHÁNH CẦN THƠ',
+      address: 'Số 48 - 48B Bà Triệu, Phường Tân An, Quận Ninh Kiều, Thành phố Cần Thơ, Việt Nam',
+      taxCode: '0316504814-001',
+      phone: ''
     }
   ];
 
-  const handleRowClick = (invoice: any) => (event: React.MouseEvent) => {
+  const handleEditClick = (customer: any) => (event: React.MouseEvent) => {
+    event.stopPropagation();
+    onClickEdit?.(event);
+  };
+
+  const handleDeleteClick = (customer: any) => (event: React.MouseEvent) => {
+    event.stopPropagation();
+    onClickDelete?.(event);
+  };
+
+  const handleRowClick = (customer: any) => (event: React.MouseEvent) => {
     onClickRow?.(event);
-  };
-
-  const handlePreviousClick = (event: React.MouseEvent) => {
-    onClickPrevious?.(event);
-  };
-
-  const handleNextClick = (event: React.MouseEvent) => {
-    onClickNext?.(event);
   };
 
   const handlePageClick = (event: React.MouseEvent) => {
@@ -71,55 +83,79 @@ const InvoiceTable: React.FC<OnClickProps> = ({
         <table className="w-full border-collapse">
           {/* Table Header */}
           <thead>
-            <tr className="bg-gray-50">
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">
-                Trạng thái kiểm tra
+            <tr className="bg-gray-50 border-b">
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 min-w-[100px]">
+                Mã khách hàng
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">
-                Ký hiệu
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 min-w-[200px]">
+                Tên khách hàng
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">
-                Ngày hóa đơn
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 min-w-[300px]">
+                Địa chỉ
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">
-                Số hoá đơn
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 min-w-[120px]">
+                Mã số thuế
               </th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 border-b">
-                Nhà cung cấp
+              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700 min-w-[100px]">
+                Điện thoại
+              </th>
+              <th className="px-4 py-3 text-center text-sm font-medium text-gray-700 min-w-[120px]">
+                Thao tác
               </th>
             </tr>
           </thead>
           
           {/* Table Body */}
           <tbody>
-            {safeItems.map((invoice, index) => {
-              const safeInvoice = invoice ?? {};
-              const status = _.get(safeInvoice, 'status', '');
-              const symbol = _.get(safeInvoice, 'symbol', '');
-              const invoiceNumber = _.get(safeInvoice, 'invoiceNumber', '');
-              const supplier = _.get(safeInvoice, 'supplier', '');
+            {safeItems.map((customer, index) => {
+              const safeCustomer = customer ?? {};
+              const customerCode = _.get(safeCustomer, 'customerCode', '');
+              const customerName = _.get(safeCustomer, 'customerName', '');
+              const address = _.get(safeCustomer, 'address', '');
+              const taxCode = _.get(safeCustomer, 'taxCode', '');
+              const phone = _.get(safeCustomer, 'phone', '');
 
               return (
                 <tr 
-                  key={index}
-                  onClick={handleRowClick(invoice)}
+                  key={customerCode || index}
+                  onClick={handleRowClick(customer)}
                   className="hover:bg-gray-50 cursor-pointer border-b"
                 >
-                  <td className="px-4 py-3 text-sm text-gray-900">
-                    {status}
+                  <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                    {customerCode}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">
-                    {symbol}
+                    {customerName}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-700 max-w-xs">
+                    <div className="line-clamp-2">
+                      {address}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">
-                    {/* Note: The date appears to be in the symbol column in the image */}
-                    {symbol}
+                    {taxCode}
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-900">
-                    {invoiceNumber}
+                    {phone}
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-900 max-w-md truncate">
-                    {supplier}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-center space-x-2">
+                      {/* Edit Button */}
+                      <button
+                        onClick={handleEditClick(customer)}
+                        className="px-3 py-1 text-xs font-medium text-white bg-blue-500 rounded hover:bg-blue-600 transition-colors"
+                      >
+                        Sửa
+                      </button>
+                      
+                      {/* Delete Button */}
+                      <button
+                        onClick={handleDeleteClick(customer)}
+                        className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
+                      >
+                        Xoá
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );
@@ -129,19 +165,8 @@ const InvoiceTable: React.FC<OnClickProps> = ({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between px-4 py-3 bg-white border-t">
+      <div className="flex items-center justify-end px-4 py-3 bg-white border-t">
         <div className="flex items-center space-x-2">
-          {/* Previous Button */}
-          <button
-            onClick={handlePreviousClick}
-            className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-50"
-            disabled={true}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          
           {/* Page Number */}
           <button
             onClick={handlePageClick}
@@ -149,27 +174,10 @@ const InvoiceTable: React.FC<OnClickProps> = ({
           >
             1
           </button>
-          
-          {/* Next Button */}
-          <button
-            onClick={handleNextClick}
-            className="p-2 text-gray-600 hover:text-gray-800"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="flex-1 max-w-md mx-4">
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-gray-400 h-2 rounded-full" style={{ width: '30%' }}></div>
-          </div>
         </div>
       </div>
     </div>
   );
 };
 
-export default InvoiceTable;
+export default CustomerTable;
