@@ -58,21 +58,21 @@ const CustomerTable: React.FC<OnClickProps> = ({
     }
   ];
 
-  const handleEditClick = (customer: any) => (event: React.MouseEvent) => {
+  const handleEditClick = (customer: any) => (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     onClickEdit?.(event);
   };
 
-  const handleDeleteClick = (customer: any) => (event: React.MouseEvent) => {
+  const handleDeleteClick = (customer: any) => (event: React.MouseEvent<HTMLElement>) => {
     event.stopPropagation();
     onClickDelete?.(event);
   };
 
-  const handleRowClick = (customer: any) => (event: React.MouseEvent) => {
+  const handleRowClick = (customer: any) => (event: React.MouseEvent<HTMLElement>) => {
     onClickRow?.(event);
   };
 
-  const handlePageClick = (event: React.MouseEvent) => {
+  const handlePageClick = (event: React.MouseEvent<HTMLElement>) => {
     onClickPage?.(event);
   };
 

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-'use client'
+'use client';
 import React, { MouseEventHandler, useState } from 'react';
 import _ from 'lodash';
 
@@ -67,7 +67,7 @@ const TableRow: React.FC<{
 
 const TableHeader: React.FC<{
   isAllSelected: boolean;
-  onSelectAll: () => void;
+  onSelectAll: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }> = ({ isAllSelected, onSelectAll }) => {
   return (
     <thead className="bg-gray-50">
@@ -80,24 +80,14 @@ const TableHeader: React.FC<{
             className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
           />
         </th>
-        <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">
-          Ngày hạch toán
-        </th>
-        <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">
-          Số chứng từ
-        </th>
-        <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">
-          Diễn giải
-        </th>
-        <th className="px-4 py-3 text-right text-sm font-medium text-gray-900">
-          Tổng tiền
-        </th>
+        <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Ngày hạch toán</th>
+        <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Số chứng từ</th>
+        <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Diễn giải</th>
+        <th className="px-4 py-3 text-right text-sm font-medium text-gray-900">Tổng tiền</th>
         <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">
           Người giao/người nhận
         </th>
-        <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">
-          
-        </th>
+        <th className="px-4 py-3 text-left text-sm font-medium text-gray-900"></th>
       </tr>
     </thead>
   );
@@ -138,40 +128,42 @@ const DocumentTable: React.FC<OnClickProps> = ({
 }) => {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
 
-  const safeItems = _.isArray(items) ? items : [
-    {
-      id: '1',
-      date: 'Fr Apr 25 2025',
-      documentNumber: 'Xút0001',
-      description: '',
-      amount: 0,
-      assignee: ''
-    },
-    {
-      id: '2',
-      date: 'Sat Apr 26 2025',
-      documentNumber: 'Nr00003',
-      description: '12344078',
-      amount: 600000,
-      assignee: 'Duy Quang'
-    },
-    {
-      id: '3',
-      date: 'Fr Apr 25 2025',
-      documentNumber: 'Nr00001',
-      description: 'Test',
-      amount: 200000,
-      assignee: 'Tuấn Em'
-    },
-    {
-      id: '4',
-      date: 'Fr Apr 25 2025',
-      documentNumber: 'Nr00002',
-      description: 'Test',
-      amount: 300000,
-      assignee: 'Duy Quang'
-    }
-  ];
+  const safeItems = _.isArray(items)
+    ? items
+    : [
+        {
+          id: '1',
+          date: 'Fr Apr 25 2025',
+          documentNumber: 'Xút0001',
+          description: '',
+          amount: 0,
+          assignee: '',
+        },
+        {
+          id: '2',
+          date: 'Sat Apr 26 2025',
+          documentNumber: 'Nr00003',
+          description: '12344078',
+          amount: 600000,
+          assignee: 'Duy Quang',
+        },
+        {
+          id: '3',
+          date: 'Fr Apr 25 2025',
+          documentNumber: 'Nr00001',
+          description: 'Test',
+          amount: 200000,
+          assignee: 'Tuấn Em',
+        },
+        {
+          id: '4',
+          date: 'Fr Apr 25 2025',
+          documentNumber: 'Nr00002',
+          description: 'Test',
+          amount: 300000,
+          assignee: 'Duy Quang',
+        },
+      ];
 
   const totalAmount = safeItems.reduce((sum, item) => {
     const amount = _.get(item, 'amount', 0);
@@ -188,14 +180,37 @@ const DocumentTable: React.FC<OnClickProps> = ({
     setSelectedItems(newSelected);
   };
 
-  const handleSelectAll = () => {
+  const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (selectedItems.size === safeItems.length) {
       setSelectedItems(new Set());
     } else {
-      const allIds = safeItems.map(item => _.get(item, 'id', ''));
+      const allIds = safeItems.map((item) => _.get(item, 'id', ''));
       setSelectedItems(new Set(allIds));
     }
     onClickSelectAll?.(event as any);
   };
 
-  const isAllSelected = selectedItems.size === safeItems.length && safeItems.length
+  const isAllSelected = selectedItems.size === safeItems.length && safeItems.length > 0;
+
+  return (
+    <div id={id} style={style} className={className}>
+      <table className="min-w-full divide-y divide-gray-200">
+        <TableHeader isAllSelected={isAllSelected} onSelectAll={handleSelectAll} />
+        <tbody>
+          {safeItems.map((item: any) => (
+            <TableRow
+              key={item.id}
+              item={item}
+              isSelected={selectedItems.has(item.id)}
+              onSelect={handleSelectItem}
+              onClickView={onClickView}
+            />
+          ))}
+        </tbody>
+        <TableSummary total={totalAmount} />
+      </table>
+    </div>
+  );
+};
+
+export default DocumentTable;
